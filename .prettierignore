@@ -1,0 +1,22 @@
+# Environment files
+.env
+.env.*
+
+# VSCode settings
+.vscode/
+
+# Build output
+dist/
+
+# Package lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Git & other VCS
+.git/
+.svn/
+.hg/
+
+# Dependencies
+node_modules/
