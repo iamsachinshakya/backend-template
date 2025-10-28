@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { userRouter } from "../api/v1/modules/users/routes/user.routes.js";
+import { errorMiddleware } from "../api/v1/common/middlewares/error.middleware.js";
 
 export const app = express();
 
@@ -19,6 +20,9 @@ app.use(cookieParser());
 
 // routes
 app.use("/api/v1/users", userRouter);
+
+// Global error handler — should be last
+app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
   res.send("🚀 Express server running!");
