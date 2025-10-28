@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { userRouter } from "../api/v1/modules/users/routes/user.routes.js";
 import { errorMiddleware } from "../api/v1/common/middlewares/error.middleware.js";
+import { AppError } from "../api/v1/common/utils/AppError.js";
 
 export const app = express();
 
@@ -18,12 +19,18 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// routes
-app.use("/api/v1/users", userRouter);
-
-// Global error handler — should be last
-app.use(errorMiddleware);
-
+// ✅ Health check route — place before main routes
 app.get("/", (req, res) => {
   res.send("🚀 Express server running!");
 });
+
+// ✅ API routes
+app.use("/api/v1/users", userRouter);
+
+// ✅ Catch-all for unmatched routes (Express 5 safe)
+app.use((req, res, next) => {
+  next(new AppError(`Route not found: ${req.originalUrl}`, 404));
+});
+
+// Global error handler — should be last
+app.use(errorMiddleware);

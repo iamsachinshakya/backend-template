@@ -1,17 +1,19 @@
 import express from "express";
 import { asyncHandler } from "../../../common/utils/asyncHandler.js";
-import { RepoProvider } from "../../../RepoProvider.js";
+import { ControllerProvider } from "../../../controllerProvider.js";
 
 const router = express.Router();
+const userController = ControllerProvider.userController;
 
 router
   .route("/")
-  .get(asyncHandler(RepoProvider.userProvider.getAll))
-  .post(asyncHandler(RepoProvider.userProvider.create));
+  .get(asyncHandler(userController.getAll.bind(userController)))
+  .post(asyncHandler(userController.create.bind(userController)));
+
 router
   .route("/:id")
-  .get(asyncHandler(RepoProvider.userProvider.getById))
-  .patch(asyncHandler(RepoProvider.userProvider.update))
-  .delete(asyncHandler(RepoProvider.userProvider.delete));
+  .get(asyncHandler(userController.getById.bind(userController)))
+  .patch(asyncHandler(userController.update.bind(userController)))
+  .delete(asyncHandler(userController.delete.bind(userController)));
 
 export const userRouter = router;
