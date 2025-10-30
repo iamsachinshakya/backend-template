@@ -4,13 +4,14 @@ import cors from "cors";
 import { userRouter } from "../api/v1/modules/users/routes/user.routes.js";
 import { errorMiddleware } from "../api/v1/common/middlewares/error.middleware.js";
 import { AppError } from "../api/v1/common/utils/AppError.js";
+import { CORS_ORIGIN } from "./config/env.js";
 
 export const app = express();
 
 // middlewares
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: CORS_ORIGIN,
     credentials: true,
   })
 );
