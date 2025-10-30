@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/apiResponse.js";
 export const errorMiddleware = (err, req, res, next) => {
   console.error("🔥 Error:", err);
 
-  // Handle custom AppError
+  // Handle custom ApiError
   if (err.isOperational) {
     return ApiResponse.error(res, err.message, err.statusCode, err.errors);
   }

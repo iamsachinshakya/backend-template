@@ -1,7 +1,22 @@
 import { User } from "../models/user.model.js";
 export class UserRepository {
   async create(data) {
-    return await User.create(data);
+    const user = await User.create(data);
+    const userObj = user.toObject();
+    userObj.id = userObj._id;
+    delete userObj._id;
+    return userObj;
+  }
+
+  async findByEmailUsername(data = {}) {
+    const { email, username } = data;
+    return await User.findOne({
+      $or: [{ username }, { email }],
+    });
+  }
+
+  async findByIdExcludeSensitiveData(id) {
+    return await User.findById(id).select("-password -refreshToken");
   }
 
   async findAll() {

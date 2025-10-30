@@ -3,8 +3,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { userRouter } from "../api/v1/modules/users/routes/user.routes.js";
 import { errorMiddleware } from "../api/v1/common/middlewares/error.middleware.js";
-import { AppError } from "../api/v1/common/utils/AppError.js";
 import { CORS_ORIGIN } from "./config/env.js";
+import { ApiError } from "../api/v1/common/utils/apiError.js";
 
 export const app = express();
 
@@ -30,7 +30,7 @@ app.use("/api/v1/users", userRouter);
 
 // ✅ Catch-all for unmatched routes (Express 5 safe)
 app.use((req, res, next) => {
-  next(new AppError(`Route not found: ${req.originalUrl}`, 404));
+  next(new ApiError(`Route not found: ${req.originalUrl}`, 404));
 });
 
 // Global error handler — should be last

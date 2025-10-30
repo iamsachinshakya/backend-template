@@ -1,12 +1,11 @@
+import { ApiError } from "../../../common/utils/apiError.js";
 import { ApiResponse } from "../../../common/utils/apiResponse.js";
-import { AppError } from "../../../common/utils/AppError.js";
 import { RepositoryProvider } from "../../../RepositoryProvider.js";
 
 export class UserController {
   // ✅ Create user
   async create(req, res) {
-    const user = await RepositoryProvider.userRepository.create(req.body);
-    return ApiResponse.success(res, "User created successfully", user, 201);
+    return await RepositoryProvider.authRepository.register(req, res);
   }
 
   // ✅ Get all users
@@ -20,7 +19,7 @@ export class UserController {
     const user = await RepositoryProvider.userRepository.findById(
       req.params.id
     );
-    if (!user) throw new AppError("User not found", 404);
+    if (!user) throw new ApiError("User not found", 404);
 
     return ApiResponse.success(res, "User fetched successfully", user);
   }
@@ -31,7 +30,7 @@ export class UserController {
       req.params.id,
       req.body
     );
-    if (!user) throw new AppError("User not found", 404);
+    if (!user) throw new ApiError("User not found", 404);
 
     return ApiResponse.success(res, "User updated successfully", user);
   }
@@ -39,7 +38,7 @@ export class UserController {
   // ✅ Delete user
   async delete(req, res) {
     const user = await RepositoryProvider.userRepository.delete(req.params.id);
-    if (!user) throw new AppError("User not found", 404);
+    if (!user) throw new ApiError("User not found", 404);
 
     return ApiResponse.success(res, "User deleted successfully", null, 204);
   }
