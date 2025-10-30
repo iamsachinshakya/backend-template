@@ -7,7 +7,6 @@ export class AuthRepository {
   // ✅ Register user
   async register(req, res) {
     const { fullName, email, username, password } = req.body;
-
     if (
       [fullName, email, username, password].some(
         (field) => field?.trim() === ""
@@ -17,7 +16,7 @@ export class AuthRepository {
     }
 
     const existedUser =
-      await RepositoryProvider.userRepository.findUserByEmailUsername({
+      await RepositoryProvider.userRepository.findByEmailUsername({
         email,
         username,
       });
@@ -25,7 +24,7 @@ export class AuthRepository {
     if (existedUser) {
       throw new ApiError("User with email or username already exists", 409);
     }
-    //console.log(req.files);
+    console.log(req.files);
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
     //const coverImageLocalPath = req.files?.coverImage[0]?.path;
