@@ -4,7 +4,7 @@ import cors from "cors";
 import { userRouter } from "../api/v1/modules/users/routes/user.routes.js";
 import { errorMiddleware } from "../api/v1/common/middlewares/error.middleware.js";
 import { CORS_ORIGIN } from "./config/env.js";
-import { ApiError } from "../api/v1/common/utils/apiError.js";
+import { ApiError } from "../api/v1/common/utils/ApiError.js";
 
 export const app = express();
 

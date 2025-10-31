@@ -5,7 +5,7 @@ import {
   REFRESH_TOKEN_SECRET,
   REFRESH_TOKEN_EXPIRY,
 } from "../../../../../app/config/env.js";
-import { ApiError } from "../../../common/utils/apiError.js";
+import { ApiError } from "../../../common/utils/ApiError.js";
 
 /**
  * Generate an access token

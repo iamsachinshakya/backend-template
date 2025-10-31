@@ -20,8 +20,16 @@ export class UserRepository {
     return await User.findById(id).select(excludeFields);
   }
 
+  async findByEmail(email) {
+    return await User.findOne({ email });
+  }
+
   async findAll() {
     return await User.find().sort({ createdAt: -1 });
+  }
+
+  async save(user, options = null) {
+    return await user.save(options || {});
   }
 
   async findById(id) {
@@ -37,5 +45,15 @@ export class UserRepository {
 
   async delete(id) {
     return await User.findByIdAndDelete(id);
+  }
+
+  async removeRefreshTokenById(userId) {
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        $unset: { refreshToken: 1 }, // removes refreshToken field
+      },
+      { new: true }
+    );
   }
 }
