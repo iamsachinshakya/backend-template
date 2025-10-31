@@ -2,6 +2,7 @@ import { RepositoryProvider } from "../../../RepositoryProvider.js";
 import { ApiResponse } from "../../../common/utils/apiResponse.js";
 import { ApiError } from "../../../common/utils/apiError.js";
 import { uploadOnCloudinary } from "../../../common/utils/cloudinary.js";
+import { hashPassword } from "../utils/bcrypt.util.js";
 
 export class AuthRepository {
   // ✅ Register user
@@ -49,18 +50,21 @@ export class AuthRepository {
       throw new ApiError("Avatar file is required", 400);
     }
 
+    const hashedPassword = await hashPassword(password);
+
     const user = await RepositoryProvider.userRepository.create({
       fullName,
       avatar: avatar.url,
       coverImage: coverImage?.url || "",
       email,
-      password,
+      password: hashedPassword,
       username: username.toLowerCase(),
     });
 
     const createdUser =
-      await RepositoryProvider.userRepository.findByIdExcludeSensitiveData(
-        user.id
+      await RepositoryProvider.userRepository.findByIdExcludeFields(
+        user.id,
+        "-password -refreshToken"
       );
 
     if (!createdUser) {

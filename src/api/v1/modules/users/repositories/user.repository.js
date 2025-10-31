@@ -15,8 +15,9 @@ export class UserRepository {
     });
   }
 
-  async findByIdExcludeSensitiveData(id) {
-    return await User.findById(id).select("-password -refreshToken");
+  async findByIdExcludeFields(id, excludeFields = "") {
+    // Ensure excludeFields is a proper string (e.g. "-password -refreshToken")
+    return await User.findById(id).select(excludeFields);
   }
 
   async findAll() {
