@@ -14,12 +14,6 @@ export class UserService {
   }
 
   async updateAccountDetails(userId, body) {
-    console.log(
-      "Updating account details for userId:",
-      userId,
-      "with data:",
-      body
-    );
     const allowedFields = ["fullName", "email", "username"];
     const updates = {};
 
