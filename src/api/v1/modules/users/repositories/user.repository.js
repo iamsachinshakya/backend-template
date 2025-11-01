@@ -1,59 +1,76 @@
 import { User } from "../models/user.model.js";
+
 export class UserRepository {
+  // Create new user
   async create(data) {
     const user = await User.create(data);
-    const userObj = user.toObject();
-    userObj.id = userObj._id;
-    delete userObj._id;
-    return userObj;
+    return this.formatUser(user);
   }
 
-  async findByEmailUsername(data = {}) {
-    const { email, username } = data;
+  async findById(id, projection = "-password -refreshToken") {
+    return await User.findById(id).select(projection);
+  }
+
+  async findByEmail(email, projection = "-password -refreshToken") {
+    return await User.findOne({ email }).select(projection);
+  }
+
+  async findByUsername(username) {
+    return await User.findOne({ username: username.toLowerCase() });
+  }
+
+  async findByEmailOrUsername({ email, username }) {
     return await User.findOne({
-      $or: [{ username }, { email }],
+      $or: [{ username: username?.toLowerCase() }, { email }],
     });
   }
 
-  async findByIdExcludeFields(id, excludeFields = "") {
-    // Ensure excludeFields is a proper string (e.g. "-password -refreshToken")
-    return await User.findById(id).select(excludeFields);
+  async findAll(sort = { createdAt: -1 }) {
+    return await User.find().sort(sort);
   }
 
-  async findByEmail(email) {
-    return await User.findOne({ email });
-  }
-
-  async findAll() {
-    return await User.find().sort({ createdAt: -1 });
-  }
-
-  async save(user, options = null) {
-    return await user.save(options || {});
-  }
-
-  async findById(id) {
-    return await User.findById(id);
-  }
-
-  async update(id, data) {
+  async updateById(id, data, projection = "-password -refreshToken") {
     return await User.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
-    });
+    }).select(projection);
   }
 
-  async delete(id) {
+  async deleteById(id) {
     return await User.findByIdAndDelete(id);
   }
 
+  // Token & account utilities
   async removeRefreshTokenById(userId) {
     return await User.findByIdAndUpdate(
       userId,
-      {
-        $unset: { refreshToken: 1 }, // removes refreshToken field
-      },
+      { $unset: { refreshToken: 1 } },
       { new: true }
     );
+  }
+
+  async updateAccountDetails(userId, updates) {
+    return await this.updateById(userId, { $set: updates });
+  }
+
+  async save(user, options = {}) {
+    return await user.save(options);
+  }
+
+  async aggregate(pipeline = []) {
+    return await User.aggregate(pipeline);
+  }
+
+  async isUsernameTaken(username) {
+    const user = await this.findByUsername(username);
+    return !!user;
+  }
+
+  formatUser(userDoc) {
+    if (!userDoc) return null;
+    const user = userDoc.toObject();
+    user.id = user._id;
+    delete user._id;
+    return user;
   }
 }

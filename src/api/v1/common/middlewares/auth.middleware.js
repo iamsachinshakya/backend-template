@@ -16,9 +16,8 @@ export const authenticateJWT = asyncHandler(async (req, res, next) => {
 
   const decodedToken = verifyToken(token, ACCESS_TOKEN_SECRET);
 
-  const user = await RepositoryProvider.userRepository.findByIdExcludeFields(
-    decodedToken?.id,
-    "-password -refreshToken"
+  const user = await RepositoryProvider.userRepository.findById(
+    decodedToken?.id
   );
 
   if (!user) {

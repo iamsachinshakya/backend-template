@@ -2,21 +2,74 @@ import express from "express";
 import { asyncHandler } from "../../../common/utils/asyncHandler.js";
 import { authenticateJWT } from "../../../common/middlewares/auth.middleware.js";
 import { ControllerProvider } from "../../../ControllerProvider.js";
+import { fileUploader } from "../../../common/middlewares/uploads.middleware.js";
 
 const router = express.Router();
-const userController = ControllerProvider.userController;
+const { userController } = ControllerProvider;
 
-router
-  .route("/")
-  .get(
-    authenticateJWT,
-    asyncHandler(userController.getAll.bind(userController))
-  );
+// Base URL: /api/v1/users
 
+// Get all users
+router.get(
+  "/",
+  authenticateJWT,
+  asyncHandler(userController.getAll.bind(userController))
+);
+
+// Get logged-in user
+router.get(
+  "/current-user",
+  authenticateJWT,
+  asyncHandler(userController.getCurrentUser.bind(userController))
+);
+
+// Update account details (PATCH)
+router.patch(
+  "/update-account",
+  authenticateJWT,
+  asyncHandler(userController.updateAccountDetails.bind(userController))
+);
+
+// Update avatar
+router.patch(
+  "/avatar",
+  authenticateJWT,
+  fileUploader.single("avatar"),
+  asyncHandler(userController.updateAvatar.bind(userController))
+);
+
+// Update cover image
+router.patch(
+  "/cover-image",
+  authenticateJWT,
+  fileUploader.single("coverImage"),
+  asyncHandler(userController.updateCoverImage.bind(userController))
+);
+
+// Get user by ID / Delete user
 router
   .route("/:id")
-  .get(asyncHandler(userController.getById.bind(userController)))
-  .patch(asyncHandler(userController.update.bind(userController)))
-  .delete(asyncHandler(userController.delete.bind(userController)));
+  .get(
+    authenticateJWT,
+    asyncHandler(userController.getById.bind(userController))
+  )
+  .delete(
+    authenticateJWT,
+    asyncHandler(userController.delete.bind(userController))
+  );
+
+// Get user channel profile by username
+router.get(
+  "/c/:username",
+  authenticateJWT,
+  asyncHandler(userController.getUserChannelProfile.bind(userController))
+);
+
+// Get watch history
+router.get(
+  "/history",
+  authenticateJWT,
+  asyncHandler(userController.getWatchHistory.bind(userController))
+);
 
 export const userRouter = router;

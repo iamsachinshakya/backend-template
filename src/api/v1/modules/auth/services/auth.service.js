@@ -19,7 +19,7 @@ export class AuthService {
     }
 
     const existingUser =
-      await RepositoryProvider.userRepository.findByEmailUsername({
+      await RepositoryProvider.userRepository.findByEmailOrUsername({
         email,
         username,
       });
@@ -53,10 +53,7 @@ export class AuthService {
       coverImage: coverImage?.url || "",
     });
 
-    return RepositoryProvider.userRepository.findByIdExcludeFields(
-      user.id,
-      "-password -refreshToken"
-    );
+    return await RepositoryProvider.userRepository.findById(user.id);
   }
 
   // Generate tokens
@@ -95,13 +92,11 @@ export class AuthService {
 
     const tokens = await this.generateAccessAndRefreshTokens(user._id);
 
-    const safeUser =
-      await RepositoryProvider.userRepository.findByIdExcludeFields(
-        user._id,
-        "-password -refreshToken"
-      );
+    const updatedUser = await RepositoryProvider.userRepository.findById(
+      user._id
+    );
 
-    return { user: safeUser, ...tokens };
+    return { user: updatedUser, ...tokens };
   }
 
   // Logout user
@@ -132,7 +127,10 @@ export class AuthService {
 
   // Change user password
   async changeUserPassword({ oldPassword, newPassword, userId }) {
-    const user = await RepositoryProvider.userRepository.findById(userId);
+    const user = await RepositoryProvider.userRepository.findById(
+      userId,
+      "+password"
+    );
     if (!user) throw new ApiError("User not found!", 404);
 
     const isPasswordValid = await comparePassword(oldPassword, user.password);

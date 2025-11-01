@@ -1,39 +1,63 @@
-import { ApiError } from "../../../common/utils/ApiError.js";
-import { ApiResponse } from "../../../common/utils/apiResponse.js";
-import { RepositoryProvider } from "../../../RepositoryProvider.js";
+import { ApiResponse } from "../../../common/utils/ApiResponse.js";
+import { ServiceProvider } from "../../../ServiceProvider.js";
+
 export class UserController {
-  // ✅ Get all users
   async getAll(req, res) {
-    const users = await RepositoryProvider.userRepository.findAll();
+    const users = await ServiceProvider.userService.getAllUsers();
     return ApiResponse.success(res, "Users fetched successfully", users);
   }
 
-  // ✅ Get user by ID
   async getById(req, res) {
-    const user = await RepositoryProvider.userRepository.findById(
-      req.params.id
-    );
-    if (!user) throw new ApiError("User not found", 404);
-
+    const user = await userService.getUserById(req.params.id);
     return ApiResponse.success(res, "User fetched successfully", user);
   }
 
-  // ✅ Update user
-  async update(req, res) {
-    const user = await RepositoryProvider.userRepository.update(
-      req.params.id,
-      req.body
-    );
-    if (!user) throw new ApiError("User not found", 404);
-
-    return ApiResponse.success(res, "User updated successfully", user);
+  async getCurrentUser(req, res) {
+    return ApiResponse.success(res, "User fetched successfully", req.user);
   }
 
-  // ✅ Delete user
-  async delete(req, res) {
-    const user = await RepositoryProvider.userRepository.delete(req.params.id);
-    if (!user) throw new ApiError("User not found", 404);
+  async updateAccountDetails(req, res) {
+    const user = await userService.updateAccountDetails(req.user.id, req.body);
+    return ApiResponse.success(
+      res,
+      "Account details updated successfully",
+      user
+    );
+  }
 
+  async updateAvatar(req, res) {
+    const user = await userService.updateAvatar(req.user.id, req.file);
+    return ApiResponse.success(res, "Avatar updated successfully", user);
+  }
+
+  async updateCoverImage(req, res) {
+    const user = await userService.updateCoverImage(req.user.id, req.file);
+    return ApiResponse.success(res, "Cover image updated successfully", user);
+  }
+
+  async delete(req, res) {
+    await userService.deleteUser(req.params.id);
     return ApiResponse.success(res, "User deleted successfully", null, 204);
+  }
+
+  async getUserChannelProfile(req, res) {
+    const channel = await userService.getUserChannelProfile(
+      req.params.username,
+      req.user?.id
+    );
+    return ApiResponse.success(
+      res,
+      "User channel data fetched successfully",
+      channel
+    );
+  }
+
+  async getWatchHistory(req, res) {
+    const history = await userService.getWatchHistory(req.user._id);
+    return ApiResponse.success(
+      res,
+      "Watch history data fetched successfully",
+      history
+    );
   }
 }
