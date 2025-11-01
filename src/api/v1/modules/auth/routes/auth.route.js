@@ -37,4 +37,11 @@ router
     asyncHandler(authController.logout.bind(authController))
   );
 
+router
+  .route("/change-password")
+  .post(
+    authenticateJWT,
+    asyncHandler(authController.changePassword.bind(authController))
+  );
+
 export const authRouter = router;

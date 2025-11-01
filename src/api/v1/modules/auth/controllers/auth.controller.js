@@ -61,4 +61,25 @@ export class AuthController {
       refreshToken,
     });
   }
+
+  async changePassword(req, res) {
+    const { oldPassword, newPassword } = req.body;
+    await ServiceProvider.authService.changeUserPassword({
+      oldPassword,
+      newPassword,
+      userId: req.user?._id,
+    });
+
+    return ApiResponse.success(res, "Password changed successfully");
+  }
+
+  // const getCurrentUser = asyncHandler(async(req, res) => {
+  //     return res
+  //     .status(200)
+  //     .json(new ApiResponse(
+  //         200,
+  //         req.user,
+  //         "User fetched successfully"
+  //     ))
+  // })
 }

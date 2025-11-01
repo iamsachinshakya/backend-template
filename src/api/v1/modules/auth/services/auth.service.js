@@ -129,4 +129,20 @@ export class AuthService {
     const tokens = await this.generateAccessAndRefreshTokens(user._id);
     return tokens;
   }
+
+  // Change user password
+  async changeUserPassword({ oldPassword, newPassword, userId }) {
+    const user = await RepositoryProvider.userRepository.findById(userId);
+    if (!user) throw new ApiError("User not found!", 404);
+
+    const isPasswordValid = await comparePassword(oldPassword, user.password);
+    if (!isPasswordValid) throw new ApiError("Invalid credentials", 401);
+
+    const hashedPassword = await hashPassword(newPassword);
+    user.password = hashedPassword;
+
+    await RepositoryProvider.userRepository.save(user, {
+      validateBeforeSave: false,
+    });
+  }
 }
