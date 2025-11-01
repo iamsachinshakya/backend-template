@@ -4,24 +4,22 @@ import { asyncHandler } from "../../../common/utils/asyncHandler.js";
 import { authenticateJWT } from "../../../common/middlewares/auth.middleware.js";
 import { fileUploader } from "../../../common/middlewares/uploads.middleware.js";
 import { cleanupUploads } from "../../../common/middlewares/cleanupUploads.middleware.js";
+import { validate } from "../../../common/middlewares/validate.middleware.js";
+import { registerUserWithFilesSchema } from "../../users/validations/user.validation.js";
 
 const router = express.Router();
 const authController = ControllerProvider.authController;
 
 router.route("/register").post(
   fileUploader.fields([
-    {
-      name: "avatar",
-      maxCount: 1,
-    },
-    {
-      name: "coverImage",
-      maxCount: 1,
-    },
+    { name: "avatar", maxCount: 1 },
+    { name: "coverImage", maxCount: 1 },
   ]),
-  asyncHandler(asyncHandler(authController.register.bind(authController))),
+  validate(registerUserWithFilesSchema),
+  asyncHandler(authController.register.bind(authController)),
   cleanupUploads
 );
+
 router
   .route("/login")
   .post(asyncHandler(authController.login.bind(authController)));

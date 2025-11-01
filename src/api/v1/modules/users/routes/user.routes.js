@@ -3,6 +3,12 @@ import { asyncHandler } from "../../../common/utils/asyncHandler.js";
 import { authenticateJWT } from "../../../common/middlewares/auth.middleware.js";
 import { ControllerProvider } from "../../../ControllerProvider.js";
 import { fileUploader } from "../../../common/middlewares/uploads.middleware.js";
+import {
+  updateAccountSchema,
+  updateAvatarSchema,
+  updateCoverImageSchema,
+} from "../validations/user.validation.js";
+import { validate } from "../../../common/middlewares/validate.middleware.js";
 
 const router = express.Router();
 const { userController } = ControllerProvider;
@@ -27,6 +33,7 @@ router.get(
 router.patch(
   "/update-account",
   authenticateJWT,
+  validate(updateAccountSchema),
   asyncHandler(userController.updateAccountDetails.bind(userController))
 );
 
@@ -35,6 +42,7 @@ router.patch(
   "/avatar",
   authenticateJWT,
   fileUploader.single("avatar"),
+  validate(updateAvatarSchema),
   asyncHandler(userController.updateAvatar.bind(userController))
 );
 
@@ -43,6 +51,7 @@ router.patch(
   "/cover-image",
   authenticateJWT,
   fileUploader.single("coverImage"),
+  validate(updateCoverImageSchema),
   asyncHandler(userController.updateCoverImage.bind(userController))
 );
 

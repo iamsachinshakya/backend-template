@@ -14,10 +14,6 @@ export class AuthService {
   async registerUser(data, files) {
     const { fullName, email, username, password } = data;
 
-    if ([fullName, email, username, password].some((f) => !f?.trim())) {
-      throw new ApiError("All fields are required", 400);
-    }
-
     const existingUser =
       await RepositoryProvider.userRepository.findByEmailOrUsername({
         email,
@@ -84,7 +80,10 @@ export class AuthService {
       throw new ApiError("Email and password are required", 400);
     }
 
-    const user = await RepositoryProvider.userRepository.findByEmail(email);
+    const user = await RepositoryProvider.userRepository.findByEmail(
+      email,
+      "+password"
+    );
     if (!user) throw new ApiError("User not found", 404);
 
     const isPasswordValid = await comparePassword(password, user.password);
