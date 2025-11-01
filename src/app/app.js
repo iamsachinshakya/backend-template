@@ -5,6 +5,7 @@ import { userRouter } from "../api/v1/modules/users/routes/user.routes.js";
 import { errorMiddleware } from "../api/v1/common/middlewares/error.middleware.js";
 import { CORS_ORIGIN } from "./config/env.js";
 import { ApiError } from "../api/v1/common/utils/ApiError.js";
+import { authRouter } from "../api/v1/modules/auth/routes/auth.route.js";
 
 export const app = express();
 
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 });
 
 // ✅ API routes
+app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 
 // ✅ Catch-all for unmatched routes (Express 5 safe)
